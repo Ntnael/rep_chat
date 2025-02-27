@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for EduAI DynamoDB tables'
+
+Resources:
+  # Users Table
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Users
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+  # Sessions Table
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Sessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sessionToken
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sessionToken
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIdIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: expires
+        Enabled: true
+
+  # Accounts Table
+  AccountsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Accounts
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: provider
+          AttributeType: S
+        - AttributeName: providerAccountId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIdIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: ProviderAccountIndex
+          KeySchema:
+            - AttributeName: provider
+              KeyType: HASH
+            - AttributeName: providerAccountId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  # Conversations Table
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Conversations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIdIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # Messages Table
+  MessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Messages
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: conversationId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: ConversationIndex
+          KeySchema:
+            - AttributeName: conversationId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  # Questions Table
+  QuestionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Questions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: topic
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: TopicIndex
+          KeySchema:
+            - AttributeName: topic
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # Cache Table
+  CacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: EduAI-Cache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+Outputs:
+  UsersTableName:
+    Description: "Users table name"
+    Value: !Ref UsersTable
+  SessionsTableName:
+    Description: "Sessions table name"
+    Value: !Ref SessionsTable
+  AccountsTableName:
+    Description: "Accounts table name"
+    Value: !Ref AccountsTable
+  ConversationsTableName:
+    Description: "Conversations table name"
+    Value: !Ref ConversationsTable
+  MessagesTableName:
+    Description: "Messages table name"
+    Value: !Ref MessagesTable
+  QuestionsTableName:
+    Description: "Questions table name"
+    Value: !Ref QuestionsTable
+  CacheTableName:
+    Description: "Cache table name"
+    Value: !Ref CacheTable 

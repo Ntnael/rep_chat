@@ -40,26 +40,29 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps) {
 
   return (
     <form onSubmit={handleSubmit} className="relative flex items-end w-full gap-2">
-      <Textarea
-        ref={textareaRef}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Ask a question..."
-        className="min-h-[60px] max-h-[200px] resize-none pr-12"
-        disabled={isLoading}
-      />
-      <Button 
-        type="submit" 
-        size="icon" 
-        className={cn(
-          "absolute right-2 bottom-2",
-          isLoading && "opacity-50 cursor-not-allowed"
-        )}
-        disabled={isLoading || !input.trim()}
-      >
-        <SendIcon className="h-4 w-4" />
-      </Button>
+      <div className="relative w-full">
+        <Textarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask a question..."
+          className="min-h-[60px] max-h-[200px] resize-none pr-12 rounded-2xl border-muted-foreground/20 focus:border-primary/50 transition-colors shadow-sm"
+          disabled={isLoading}
+        />
+        <Button 
+          type="submit" 
+          size="icon" 
+          className={cn(
+            "absolute right-2 bottom-2 rounded-full shadow-sm",
+            isLoading && "opacity-50 cursor-not-allowed",
+            !input.trim() && "opacity-70"
+          )}
+          disabled={isLoading || !input.trim()}
+        >
+          <SendIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </form>
   );
 }

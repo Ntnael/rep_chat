@@ -8,6 +8,7 @@ import { ChatInput } from '@/components/chat-input';
 import { Button } from '@/components/ui/button';
 import { Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ChatWindowProps {
   toggleQuestions: () => void;
@@ -29,12 +30,21 @@ export function ChatWindow({ toggleQuestions, questionsVisible }: ChatWindowProp
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
+      // Prepare conversation history for the API
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content
+      }));
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ 
+          message: userMessage,
+          conversationHistory
+        }),
       });
       
       if (!response.ok) {
@@ -115,7 +125,10 @@ export function ChatWindow({ toggleQuestions, questionsVisible }: ChatWindowProp
             variant={questionsVisible ? "secondary" : "outline"}
             size="sm" 
             onClick={toggleQuestions}
-            className={questionsVisible ? "bg-primary/10 border-primary/50" : ""}
+            className={cn(
+              questionsVisible ? "bg-primary/10 border-primary/50" : "",
+              "rounded-full"
+            )}
           >
             <Lightbulb className={`h-4 w-4 mr-2 ${questionsVisible ? "text-primary" : ""}`} />
             {questionsVisible ? "Hide Questions" : "Show Questions"}

@@ -5,6 +5,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const topic = searchParams.get('topic');
+    const query = searchParams.get('query');
     
     if (!topic) {
       return NextResponse.json(
